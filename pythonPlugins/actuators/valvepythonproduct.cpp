@@ -18,7 +18,7 @@ ValvePythonProduct::~ValvePythonProduct() {
 void ValvePythonProduct::moveToPosition(int position) {
     try {
         if (referenceName.empty()) {
-            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
+            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("moveToPosition")(boost::ref(*communications.get()), position);

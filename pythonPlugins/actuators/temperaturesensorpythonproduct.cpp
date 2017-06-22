@@ -18,7 +18,7 @@ TemperatureSensorPythonProduct::~TemperatureSensorPythonProduct() {
 void TemperatureSensorPythonProduct::startMeasureTemperature(units::Frequency measurementFrequency) {
     try {
         if (referenceName.empty()) {
-            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
+            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("startMeasuring")(

@@ -89,7 +89,7 @@ debug {
     INCLUDEPATH += X:\commomModel\dll_release\include
     LIBS += -L$$quote(X:\commomModel\dll_release\bin) -lcommonModel
 
-    LIBS += -L$$quote(X:\libraries\boost_1_63_0\stage\lib) -lboost_python-vc140-mt-1_61
+    LIBS += -L$$quote(X:\libraries\boost_1_63_0\stage\lib) -lboost_python-vc140-mt-1_63
 }
 
 INCLUDEPATH += X:\libraries\boost_1_63_0

@@ -20,7 +20,9 @@
 #include "pythonPlugins/actuators/valvepythonproduct.h"
 #include "pythonPlugins/actuators/volumensensorpythonproduct.h"
 
-class PythonPluginAbstractFactory : public PluginAbstractFactory
+#include "pythonPlugins/pythonplugins_global.h"
+
+class PYTHONPLUGINABSTRACTFACTORY_EXPORT PythonPluginAbstractFactory : public PluginAbstractFactory
 {
 public:
     PythonPluginAbstractFactory(std::shared_ptr<CommandSender> communications);

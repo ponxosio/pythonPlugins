@@ -25,7 +25,7 @@
 
 #include "pythonPlugins/pythonplugins_global.h"
 
-class PythonEnvironment
+class PYTHONENVIRONMENT_EXPORT PythonEnvironment
 {
 public:
     static PythonEnvironment* GetInstance();
@@ -40,7 +40,7 @@ public:
     boost::python::object executeStaticMethod(const std::string & type, const std::string & method) throw (std::invalid_argument);
     std::vector<std::pair<std::string,std::string>> getParamsType(const std::string & pluginType) throw (std::runtime_error);
 	
-	void initEnvironment();
+    void initEnvironment(const std::string & basePluginsPath);
 	void finishEnvironment();
 
 protected:

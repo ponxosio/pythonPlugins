@@ -18,7 +18,7 @@ PumpPythonProduct::~PumpPythonProduct() {
 void PumpPythonProduct::setPumpState(int dir, units::Volumetric_Flow rate) {
     try {
         if (referenceName.empty()) {
-            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
+            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("startPumping")(

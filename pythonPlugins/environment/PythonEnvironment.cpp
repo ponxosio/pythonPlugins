@@ -161,7 +161,7 @@ boost::python::api::object PythonEnvironment::getVarInstance(const std::string &
     }
 }
 
-void PythonEnvironment::initEnvironment()
+void PythonEnvironment::initEnvironment(const std::string & basePluginsPath)
 {
 	Py_Initialize();
 
@@ -174,7 +174,7 @@ void PythonEnvironment::initEnvironment()
 	class_<std::vector<std::string>>("ParamsList")
 		.def(vector_indexing_suite<std::vector<std::string>>());
 
-	addImportPath(Utils::getCurrentDir() + "\\" + BASE_PLUGIN_FOLDER);
+    addImportPath(basePluginsPath);
 }
 
 void PythonEnvironment::finishEnvironment()

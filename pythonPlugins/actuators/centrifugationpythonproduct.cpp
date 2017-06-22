@@ -18,7 +18,7 @@ CentrifugationPythonProduct::~CentrifugationPythonProduct() {
 void CentrifugationPythonProduct::startCentrifugate(units::Frequency intensity) {
     try {
         if (referenceName.empty()) {
-            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
+            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("startCentrifugate")(boost::ref(*communications.get()), intensity.to(units::Hz));

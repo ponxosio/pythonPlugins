@@ -20,8 +20,9 @@
 //local
 #include <utils/Utils.h>
 
+#include <pythonPlugins/pythonplugins_global.h>
 
-class PluginFileLoader
+class PLUGINFILELOADER_EXPORT PluginFileLoader
 {
 public:
 	static PluginFileLoader* GetInstance() {

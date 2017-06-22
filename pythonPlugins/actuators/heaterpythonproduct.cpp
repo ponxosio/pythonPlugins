@@ -18,7 +18,7 @@ HeaterPythonProduct::~HeaterPythonProduct() {
 void HeaterPythonProduct::changeTemperature(units::Temperature value) {
     try {
         if (referenceName.empty()) {
-            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
+            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("applyTemperature")(boost::ref(*communications.get()), value.to(units::K));

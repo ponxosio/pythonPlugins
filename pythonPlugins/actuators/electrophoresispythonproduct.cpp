@@ -18,7 +18,7 @@ ElectrophoresisPythonProduct::~ElectrophoresisPythonProduct() {
 void ElectrophoresisPythonProduct::startElectrophoresis(units::ElectricField fieldStrenght) {
     try {
         if (referenceName.empty()) {
-            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
+            referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("startElectrophoresis")(boost::ref(*communications.get()), fieldStrenght.to(units::V / units::m));
