@@ -17,13 +17,16 @@ ElectrophoresisPythonProduct::~ElectrophoresisPythonProduct() {
 
 void ElectrophoresisPythonProduct::startElectrophoresis(units::ElectricField fieldStrenght) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("startElectrophoresis")(boost::ref(*communications.get()), fieldStrenght.to(units::V / units::m));
-    }
-    catch (error_already_set) {
+
+        PythonEnvironment::GetInstance()->releaseGIL();
+    } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
 
@@ -42,11 +45,15 @@ void ElectrophoresisPythonProduct::startElectrophoresis(units::ElectricField fie
 
 std::shared_ptr<ElectrophoresisResult> ElectrophoresisPythonProduct::stopElectrophpresis() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("getResults")(boost::ref(*communications.get()));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
         return NULL; //TODO:
     }
     catch (error_already_set) {

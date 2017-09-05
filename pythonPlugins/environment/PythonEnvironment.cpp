@@ -164,6 +164,7 @@ boost::python::api::object PythonEnvironment::getVarInstance(const std::string &
 void PythonEnvironment::initEnvironment(const std::string & basePluginsPath)
 {
 	Py_Initialize();
+    PyEval_InitThreads();
 
 	initcommunicationsMod();
 
@@ -175,11 +176,21 @@ void PythonEnvironment::initEnvironment(const std::string & basePluginsPath)
 		.def(vector_indexing_suite<std::vector<std::string>>());
 
     addImportPath(basePluginsPath);
+
+    releaseGIL();
 }
 
 void PythonEnvironment::finishEnvironment()
 {
 	Py_Finalize();
+}
+
+void PythonEnvironment::acquireGIL() {
+    PyEval_RestoreThread(state);
+}
+
+void PythonEnvironment::releaseGIL() {
+    state = PyEval_SaveThread();
 }
 
 std::string PythonEnvironment::getPythonClassNAme(const std::string & path) throw (std::invalid_argument) {

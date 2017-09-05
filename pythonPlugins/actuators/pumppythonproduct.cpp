@@ -17,6 +17,8 @@ PumpPythonProduct::~PumpPythonProduct() {
 
 void PumpPythonProduct::setPumpState(int dir, units::Volumetric_Flow rate) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
@@ -26,6 +28,7 @@ void PumpPythonProduct::setPumpState(int dir, units::Volumetric_Flow rate) {
                     dir,
                     rate.to(units::l / units::s));
 
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
@@ -43,11 +46,15 @@ void PumpPythonProduct::setPumpState(int dir, units::Volumetric_Flow rate) {
 
 void PumpPythonProduct::stopPump() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("stopPump")(boost::ref(*communications.get()));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);

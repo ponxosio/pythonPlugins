@@ -17,6 +17,8 @@ OdSensorPythonProduct::~OdSensorPythonProduct() {
 
 void OdSensorPythonProduct::startMeasureOd(units::Frequency measurementFrequency, units::Length waveLength) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
@@ -26,6 +28,7 @@ void OdSensorPythonProduct::startMeasureOd(units::Frequency measurementFrequency
                         measurementFrequency.to(units::Hz),
                         waveLength.to(units::nm));
 
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
@@ -45,11 +48,16 @@ void OdSensorPythonProduct::startMeasureOd(units::Frequency measurementFrequency
 
 double OdSensorPythonProduct::getOdMeasurement() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         double fluorescenceValue = extract<double>(PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("getMeasurement")(boost::ref(*communications.get())));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
+
         return fluorescenceValue;
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;

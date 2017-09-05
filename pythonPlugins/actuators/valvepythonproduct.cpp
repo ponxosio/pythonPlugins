@@ -17,11 +17,15 @@ ValvePythonProduct::~ValvePythonProduct() {
 
 void ValvePythonProduct::moveToPosition(int position) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("moveToPosition")(boost::ref(*communications.get()), position);
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
@@ -39,11 +43,15 @@ void ValvePythonProduct::moveToPosition(int position) {
 
 void ValvePythonProduct::closeValve() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("closeValve")(boost::ref(*communications.get()));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);

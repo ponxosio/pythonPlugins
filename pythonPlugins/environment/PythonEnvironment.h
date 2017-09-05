@@ -43,12 +43,17 @@ public:
     void initEnvironment(const std::string & basePluginsPath);
 	void finishEnvironment();
 
+    void acquireGIL();
+    void releaseGIL();
+
 protected:
 	std::unordered_map<std::string, boost::python::api::object> loadedClasses;
 	std::unordered_set<std::string> loadedFiles;
 	std::unordered_set<std::string> availableInstances;
 	boost::python::api::object main_namespace;
 	AutoEnumerate autoEnum;
+
+    PyThreadState* state;
 
 	void addImportPath(const std::string & path);
 	std::string getPythonClassNAme(const std::string & path) throw (std::invalid_argument);

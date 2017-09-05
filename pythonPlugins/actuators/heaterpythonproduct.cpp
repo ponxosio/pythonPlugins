@@ -17,13 +17,16 @@ HeaterPythonProduct::~HeaterPythonProduct() {
 
 void HeaterPythonProduct::changeTemperature(units::Temperature value) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
-        PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("applyTemperature")(boost::ref(*communications.get()), value.to(units::K));
-    }
-    catch (error_already_set) {
+        PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("applyTemperature")(boost::ref(*communications.get()), value.to(units::C));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
+    } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
 
@@ -42,13 +45,16 @@ void HeaterPythonProduct::changeTemperature(units::Temperature value) {
 
 void HeaterPythonProduct::turnOff() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("turnOff")(boost::ref(*communications.get()));
-    }
-    catch (error_already_set) {
+
+        PythonEnvironment::GetInstance()->releaseGIL();
+    } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
 

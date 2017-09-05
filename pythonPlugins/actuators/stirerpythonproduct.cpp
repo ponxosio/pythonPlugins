@@ -17,11 +17,15 @@ StirerPythonProduct::~StirerPythonProduct() {
 
 void StirerPythonProduct::stir(units::Frequency intensity) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("mix")(boost::ref(*communications.get()), intensity.to(units::Hz));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
@@ -39,11 +43,15 @@ void StirerPythonProduct::stir(units::Frequency intensity) {
 
 void StirerPythonProduct::turnOff() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("stopMixing")(boost::ref(*communications.get()));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);

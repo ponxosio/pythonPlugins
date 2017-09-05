@@ -17,11 +17,15 @@ ShakePythonProduct::~ShakePythonProduct() {
 
 void ShakePythonProduct::startShake(units::Frequency intensity) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("startShaking")(boost::ref(*communications.get()), intensity.to(units::Hz));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
@@ -39,11 +43,15 @@ void ShakePythonProduct::startShake(units::Frequency intensity) {
 
 void ShakePythonProduct::stopShake() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("stopShaking")(boost::ref(*communications.get()));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);

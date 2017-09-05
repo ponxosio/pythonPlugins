@@ -17,6 +17,8 @@ LuminiscenceSensorPythonProduct::~LuminiscenceSensorPythonProduct() {
 
 void LuminiscenceSensorPythonProduct::startMeasureLuminiscence(units::Frequency measurementFrequency) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
@@ -25,6 +27,7 @@ void LuminiscenceSensorPythonProduct::startMeasureLuminiscence(units::Frequency 
                         boost::ref(*communications.get()),
                         measurementFrequency.to(units::Hz));
 
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
@@ -44,13 +47,17 @@ void LuminiscenceSensorPythonProduct::startMeasureLuminiscence(units::Frequency 
 
 units::LuminousIntensity LuminiscenceSensorPythonProduct::getLuminiscenceMeasurement() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         double fluorescenceValue = extract<double>(PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("getMeasurement")(boost::ref(*communications.get())));
-        return fluorescenceValue * units::cd;
 
+        PythonEnvironment::GetInstance()->releaseGIL();
+
+        return fluorescenceValue * units::cd;
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);

@@ -17,11 +17,15 @@ CentrifugationPythonProduct::~CentrifugationPythonProduct() {
 
 void CentrifugationPythonProduct::startCentrifugate(units::Frequency intensity) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("startCentrifugate")(boost::ref(*communications.get()), intensity.to(units::Hz));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     }
     catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
@@ -42,11 +46,15 @@ void CentrifugationPythonProduct::startCentrifugate(units::Frequency intensity) 
 
 void CentrifugationPythonProduct::turnOff() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("stopCentrifugate")(boost::ref(*communications.get()));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     }
     catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;

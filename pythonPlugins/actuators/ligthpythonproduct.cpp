@@ -17,6 +17,8 @@ LigthPythonProduct::~LigthPythonProduct() {
 
 void LigthPythonProduct::applyLight(units::LuminousIntensity intensity, units::Length wavelenght) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
@@ -25,6 +27,8 @@ void LigthPythonProduct::applyLight(units::LuminousIntensity intensity, units::L
                     boost::ref(*communications.get()),
                     intensity.to(units::cd),
                     wavelenght.to(units::nm));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
@@ -42,11 +46,15 @@ void LigthPythonProduct::applyLight(units::LuminousIntensity intensity, units::L
 
 void LigthPythonProduct::turnOffLight() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("turnOff")(boost::ref(*communications.get()));
+
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);

@@ -17,6 +17,8 @@ TemperatureSensorPythonProduct::~TemperatureSensorPythonProduct() {
 
 void TemperatureSensorPythonProduct::startMeasureTemperature(units::Frequency measurementFrequency) {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getName(), configurationObj->getParams());
         }
@@ -25,6 +27,7 @@ void TemperatureSensorPythonProduct::startMeasureTemperature(units::Frequency me
                         boost::ref(*communications.get()),
                         measurementFrequency.to(units::Hz));
 
+        PythonEnvironment::GetInstance()->releaseGIL();
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
@@ -44,13 +47,17 @@ void TemperatureSensorPythonProduct::startMeasureTemperature(units::Frequency me
 
 units::Temperature TemperatureSensorPythonProduct::getTemperatureMeasurement() {
     try {
+        PythonEnvironment::GetInstance()->acquireGIL();
+
         if (referenceName.empty()) {
             referenceName = PythonEnvironment::GetInstance()->makeInstance(configurationObj->getPluginType(), configurationObj->getParams());
         }
 
         double temperatureValue = extract<double>(PythonEnvironment::GetInstance()->getVarInstance(referenceName).attr("getMeasurement")(boost::ref(*communications.get())));
-        return temperatureValue * units::K;
 
+        PythonEnvironment::GetInstance()->releaseGIL();
+
+        return temperatureValue * units::C;
     } catch (error_already_set) {
         PyObject *ptype, *pvalue, *ptraceback;
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
